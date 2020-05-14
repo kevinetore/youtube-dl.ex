@@ -1,20 +1,25 @@
 defmodule ElixirYoutubeDl.Runner do
   def main(url, options) do
-    executable = ElixirYoutubeDl.Support.main()
     IO.puts "Downloading #{url}..."
+    youtube_dl_options = arguments(options) ++ [url]
+    ElixirYoutubeDl.Support.main()
+    |> download(youtube_dl_options)
+  end
 
-    arguments =
+  defp download(path, options) do
+    case System.cmd(path, options, [stderr_to_stdout: true]) do
+      {"", error} -> {:error, error}
+      {error, 2} -> {:error, error}
+      {meta, 0} -> {:ok, meta}
+      {meta, 1} -> {:error, meta}
+    end
+  end
+
+  defp arguments(options) do
     options
     |> Enum.reduce([], fn
       {k, v}, acc -> acc ++ ["--#{k}", v]
       argument, acc -> ["--#{argument}" | acc]
     end)
-
-    case System.cmd(executable, arguments ++ [url], [stderr_to_stdout: true]) do
-      {"", error} -> {:error, "#{url} is not a valid URL"}
-      {"", 2} -> {:error, "youtube-dl: error: no such option"}
-      {meta, 0} -> {:ok, meta}
-      {meta, 1} -> {:error, "ffprobe and or ffmpeg not found. Please install one."}
-    end
   end
 end
