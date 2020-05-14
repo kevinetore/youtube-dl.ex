@@ -25,4 +25,4 @@ elixir_youtube_dl-*.tar
 *.mp4
 *.mp3
 *.wav
-
+*.mkv
