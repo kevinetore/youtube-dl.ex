@@ -1,5 +1,6 @@
 defmodule ElixirYoutubeDl.Download do
   def download(url, options \\ []) do
-    ElixirYoutubeDl.Runner.main(url, options)
+    {:ok, pid} = ElixirYoutubeDl.DownloadServer.start_link
+    ElixirYoutubeDl.DownloadServer.download_link(pid, url, options)
   end
 end

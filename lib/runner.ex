@@ -1,17 +1,18 @@
 defmodule ElixirYoutubeDl.Runner do
   def main(url, options) do
-    IO.puts "Downloading #{url}..."
     youtube_dl_options = arguments(options) ++ [url]
     ElixirYoutubeDl.Support.main()
     |> download(youtube_dl_options)
   end
 
   defp download(path, options) do
+    IO.puts "Downloading..."
+
     case System.cmd(path, options, [stderr_to_stdout: true]) do
-      {"", error} -> {:error, error}
-      {error, 2} -> {:error, error}
-      {meta, 0} -> {:ok, meta}
-      {meta, 1} -> {:error, meta}
+      {"", error} -> IO.inspect {:error, error}
+      {error, 2} -> IO.inspect {:error, error}
+      {meta, 0} -> IO.inspect {:ok, meta}
+      {meta, 1} -> IO.inspect {:error, meta}
     end
   end
 
